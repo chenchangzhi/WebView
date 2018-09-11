@@ -1,10 +1,14 @@
 package com.shijiaoji;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -12,15 +16,20 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+
 public class MainActivity extends Activity {
 
     private String TAG = "MainActivity";
     private WebView webView;
-
+    SharedPreferences sp;
+    String url="http://www.lanou3g.com/";
+//    String url="file:///android_asset/bgline.html";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //创建一个sharedpreferences
+        sp = getSharedPreferences("aaa", MODE_PRIVATE);
         webView = (WebView) findViewById(R.id.main_webview);
         // 触摸焦点起作用.如果不设置，则在点击网页文本输入框时，不能弹出软键盘及不响应其他的一些事件。
         webView.requestFocus();
@@ -35,6 +44,9 @@ public class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 // 拦截 url 跳转,在里边添加点击链接跳转或者操作
+                CookieManager cookieManager=CookieManager.getInstance();
+                String cookie=cookieManager.getCookie(url);
+                sp.edit().putString("cook", cookie).apply();
                 view.loadUrl(url);
                 return true;
             }
@@ -71,8 +83,8 @@ public class MainActivity extends Activity {
         });
         webView.addJavascriptInterface(new InJavaScriptLocalObj(), "java_obj");
         setParamera();
-//        webView.loadUrl("http://www.lanou3g.com/");
-        webView.loadUrl("file:///android_asset/bgline.html");
+        synCookies(this, url,sp.getString("cook", ""));
+        webView.loadUrl(url);
 
     }
 
@@ -146,4 +158,18 @@ public class MainActivity extends Activity {
             Log.d(TAG,"====>html=" + str);
         }
     }
+
+    /**
+     * 同步一下cookie
+     * 在mWebView.loadUrl(url);之前设置一下cookies
+     */
+    public void synCookies(Context context, String url,String cookies) {
+        CookieSyncManager.createInstance(context);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+//        cookieManager.removeSessionCookie();//移除
+        cookieManager.setCookie(url, cookies);
+        CookieSyncManager.getInstance().sync();
+    }
+
 }
