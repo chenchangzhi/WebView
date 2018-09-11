@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>HTML5 Canvas线条背景动画</title>
+
+		<style>
+			canvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: black;
+			}
+		</style>
+
+	</head>
+
+	<body onresize="loadjs()">
+
+		<canvas id="c" >
+		</canvas>
+		<script src='js/bgLine.js' id="s1">
+		</script>
+		<div style="position: absolute; width: 100% ;height: 100%;float: left; font:normal 14px/24px 'MicroSoft YaHei';">
+			<p style="color: #ff0000;">适用浏览器：360、FireFox、Chrome、Opera、傲游、搜狗、世界之窗. 不支持Safari、IE8及以下浏览器。</p>
+			<p>来源：
+				<a href="elsticTest.html" target="_blank">php中文网</a>
+			</p>
+		</div>
+		<script language="javascript">
+			function loadjs() {
+				var c = document.getElementById("c");
+				c.width = window.innerWidth;
+				c.height = window.innerHeight;
+
+				reloadData(c.width, c.height);
+			}
+		</script>
+	</body>
+
+</html>
